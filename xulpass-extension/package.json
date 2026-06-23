@@ -1,0 +1,19 @@
+{
+  "name": "xulpass-extension",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "node build.mjs",
+    "watch": "node --watch build.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.108.2",
+    "canvas": "^3.2.3",
+    "esbuild": "^0.28.1"
+  }
+}
