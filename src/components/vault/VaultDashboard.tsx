@@ -23,7 +23,7 @@ const NAV_ITEMS = [
   { id: 'app',      label: 'Aplicaciones',        icon: CreditCard, category: 'app' },
   { id: 'email',    label: 'Email',               icon: FileText, category: 'email' },
   { id: 'social',   label: 'Redes Sociales',      icon: Star,     category: 'social' },
-  { id: 'server',   label: 'Servidores',          icon: Settings, category: 'server' },
+  { id: 'server',   label: 'Servidores',          icon: Shield,   category: 'server' },
   { id: 'other',    label: 'Otros',               icon: MapPin,   category: 'other' },
 ]
 
