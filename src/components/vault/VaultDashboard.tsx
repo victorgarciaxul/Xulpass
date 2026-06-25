@@ -37,6 +37,11 @@ export function VaultDashboard({ userId, userEmail }: Props) {
   const [editEntry, setEditEntry] = useState<VaultEntry | null>(null)
   const [detailEntry, setDetailEntry] = useState<VaultEntry | null>(null)
   const [dark, setDark] = useState(true)
+  const [changePwdOpen, setChangePwdOpen] = useState(false)
+  const [changePwdForm, setChangePwdForm] = useState({ current: '', next: '', confirm: '' })
+  const [changePwdError, setChangePwdError] = useState('')
+  const [changePwdOk, setChangePwdOk] = useState(false)
+  const [changePwdLoading, setChangePwdLoading] = useState(false)
   const supabase = createClient()
 
   const t = dark ? themes.dark : themes.light
@@ -105,6 +110,39 @@ export function VaultDashboard({ userId, userEmail }: Props) {
     window.location.href = '/login'
   }
 
+  async function handleChangePassword() {
+    setChangePwdError('')
+    setChangePwdOk(false)
+    if (changePwdForm.next !== changePwdForm.confirm) {
+      setChangePwdError('Las contraseñas nuevas no coinciden')
+      return
+    }
+    if (changePwdForm.next.length < 6) {
+      setChangePwdError('La contraseña debe tener al menos 6 caracteres')
+      return
+    }
+    setChangePwdLoading(true)
+    // Re-authenticate first
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: userEmail,
+      password: changePwdForm.current,
+    })
+    if (signInError) {
+      setChangePwdError('Contraseña actual incorrecta')
+      setChangePwdLoading(false)
+      return
+    }
+    const { error } = await supabase.auth.updateUser({ password: changePwdForm.next })
+    setChangePwdLoading(false)
+    if (error) {
+      setChangePwdError('Error al cambiar la contraseña. Inténtalo de nuevo.')
+      return
+    }
+    setChangePwdOk(true)
+    setChangePwdForm({ current: '', next: '', confirm: '' })
+    setTimeout(() => { setChangePwdOpen(false); setChangePwdOk(false) }, 2000)
+  }
+
   const filtered = entries.filter(e => {
     const matchSearch = search === '' ||
       e.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -124,6 +162,48 @@ export function VaultDashboard({ userId, userEmail }: Props) {
 
   return (
     <div className={`flex h-screen overflow-hidden transition-colors duration-300 ${t.bg}`}>
+      {/* ── CHANGE PASSWORD MODAL ── */}
+      {changePwdOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className={`w-full max-w-md mx-4 rounded-2xl p-6 shadow-2xl border ${t.border} ${dark ? 'bg-[#1a1d27]' : 'bg-white'}`}>
+            <h2 className={`text-lg font-bold mb-5 ${t.text}`}>Cambiar contraseña</h2>
+            <div className="space-y-3">
+              {(['current','next','confirm'] as const).map((field, i) => (
+                <div key={field}>
+                  <label className={`block text-xs font-medium mb-1 ${t.muted}`}>
+                    {field === 'current' ? 'Contraseña actual' : field === 'next' ? 'Nueva contraseña' : 'Confirmar nueva contraseña'}
+                  </label>
+                  <input
+                    type="password"
+                    value={changePwdForm[field]}
+                    onChange={e => setChangePwdForm(f => ({ ...f, [field]: e.target.value }))}
+                    className={`w-full h-10 px-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/40 ${t.input}`}
+                    placeholder={field === 'current' ? '••••••••' : field === 'next' ? 'Mínimo 6 caracteres' : '••••••••'}
+                  />
+                </div>
+              ))}
+              {changePwdError && <p className="text-red-500 text-xs">{changePwdError}</p>}
+              {changePwdOk && <p className="text-emerald-500 text-xs font-medium">✓ Contraseña cambiada correctamente</p>}
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setChangePwdOpen(false)}
+                className={`flex-1 h-10 rounded-xl text-sm font-medium border ${t.border} ${t.text} hover:opacity-70 transition-opacity`}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleChangePassword}
+                disabled={changePwdLoading}
+                className="flex-1 h-10 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-semibold transition-colors disabled:opacity-50"
+              >
+                {changePwdLoading ? 'Guardando...' : 'Guardar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {detailEntry && (
         <EntryDetail
           entry={detailEntry}
@@ -267,7 +347,11 @@ export function VaultDashboard({ userId, userEmail }: Props) {
           <button className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors flex-shrink-0 ${t.iconBtn}`}>
             <HelpCircle className="w-4 h-4" />
           </button>
-          <button className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors flex-shrink-0 ${t.iconBtn}`}>
+          <button
+            onClick={() => { setChangePwdOpen(true); setChangePwdError(''); setChangePwdOk(false) }}
+            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors flex-shrink-0 ${t.iconBtn}`}
+            title="Cambiar contraseña"
+          >
             <Settings className="w-4 h-4" />
           </button>
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-rose-700 flex items-center justify-center text-white font-bold text-sm shadow-lg flex-shrink-0 select-none">
