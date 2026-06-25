@@ -297,6 +297,30 @@ export function VaultDashboard({ userId, userEmail }: Props) {
             </div>
           </div>
         </div>
+
+        {/* User footer */}
+        <div className={`px-3 pb-4 border-t ${t.border} pt-3 space-y-1`}>
+          <div className={`flex items-center gap-2.5 px-3 py-2 rounded-xl ${t.card}`}>
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-500 to-rose-700 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
+              {initials}
+            </div>
+            <span className={`text-xs truncate flex-1 ${t.muted}`}>{userEmail}</span>
+          </div>
+          <button
+            onClick={() => { setChangePwdOpen(true); setChangePwdError(''); setChangePwdOk(false) }}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${t.navItem}`}
+          >
+            <Key className="w-4 h-4 flex-shrink-0" />
+            Cambiar contraseña
+          </button>
+          <button
+            onClick={handleSignOut}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors hover:text-red-500 ${t.navItem}`}
+          >
+            <LogOut className="w-4 h-4 flex-shrink-0" />
+            Cerrar sesión
+          </button>
+        </div>
       </aside>
 
       {/* ── MAIN ── */}
