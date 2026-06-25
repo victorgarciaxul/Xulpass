@@ -1,12 +1,13 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { Plus, Search, Star, Key, FileText, MapPin, CreditCard, Settings, HelpCircle, SortAsc, Sun, Moon, LogOut, Share2 } from 'lucide-react'
+import { Plus, Search, Star, Key, FileText, MapPin, CreditCard, SortAsc, Sun, Moon, LogOut, Share2, Shield } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { EntryCard } from './EntryCard'
 import { EntryDetail } from './EntryDetail'
 import { EntryForm } from './EntryForm'
 import { ShareModal } from './ShareModal'
+import { TwoFactorSetup } from './TwoFactorSetup'
 import { createClient } from '@/lib/supabase/client'
 import { type VaultEntry, type VaultEntryForm, type Category } from '@/types'
 
@@ -38,6 +39,7 @@ export function VaultDashboard({ userId, userEmail }: Props) {
   const [editEntry, setEditEntry] = useState<VaultEntry | null>(null)
   const [detailEntry, setDetailEntry] = useState<VaultEntry | null>(null)
   const [dark, setDark] = useState(true)
+  const [twoFactorOpen, setTwoFactorOpen] = useState(false)
   const [sharedEntries, setSharedEntries] = useState<VaultEntry[]>([])
   const [shareEntry, setShareEntry] = useState<VaultEntry | null>(null)
   const [changePwdOpen, setChangePwdOpen] = useState(false)
@@ -220,6 +222,8 @@ export function VaultDashboard({ userId, userEmail }: Props) {
         </div>
       )}
 
+      {twoFactorOpen && <TwoFactorSetup onClose={() => setTwoFactorOpen(false)} dark={dark} />}
+
       {shareEntry && (
         <ShareModal
           entry={shareEntry}
@@ -339,6 +343,13 @@ export function VaultDashboard({ userId, userEmail }: Props) {
           >
             <Key className="w-4 h-4 flex-shrink-0" />
             Cambiar contraseña
+          </button>
+          <button
+            onClick={() => setTwoFactorOpen(true)}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${t.navItem}`}
+          >
+            <Shield className="w-4 h-4 flex-shrink-0" />
+            Verificación en 2 pasos
           </button>
           <button
             onClick={handleSignOut}
