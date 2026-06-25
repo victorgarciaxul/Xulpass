@@ -63,7 +63,11 @@ export function VaultDashboard({ userId, userEmail }: Props) {
       .from('vault_shares')
       .select('entry_id, vault_entries(*)')
       .eq('shared_with', userId)
-    const entries = (data ?? []).map((r: { vault_entries: VaultEntry }) => r.vault_entries).filter(Boolean)
+    const entries = (data ?? []).flatMap((r: Record<string, unknown>) => {
+      const ve = r.vault_entries
+      if (!ve) return []
+      return Array.isArray(ve) ? ve : [ve]
+    }) as VaultEntry[]
     setSharedEntries(entries)
   }, [supabase, userId])
 
