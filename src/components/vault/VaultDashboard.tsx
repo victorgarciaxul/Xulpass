@@ -1,11 +1,12 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { Plus, Search, Star, Key, FileText, MapPin, CreditCard, Settings, HelpCircle, SortAsc, Sun, Moon, LogOut } from 'lucide-react'
+import { Plus, Search, Star, Key, FileText, MapPin, CreditCard, Settings, HelpCircle, SortAsc, Sun, Moon, LogOut, Share2 } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { EntryCard } from './EntryCard'
 import { EntryDetail } from './EntryDetail'
 import { EntryForm } from './EntryForm'
+import { ShareModal } from './ShareModal'
 import { createClient } from '@/lib/supabase/client'
 import { type VaultEntry, type VaultEntryForm, type Category } from '@/types'
 
@@ -37,6 +38,8 @@ export function VaultDashboard({ userId, userEmail }: Props) {
   const [editEntry, setEditEntry] = useState<VaultEntry | null>(null)
   const [detailEntry, setDetailEntry] = useState<VaultEntry | null>(null)
   const [dark, setDark] = useState(true)
+  const [sharedEntries, setSharedEntries] = useState<VaultEntry[]>([])
+  const [shareEntry, setShareEntry] = useState<VaultEntry | null>(null)
   const [changePwdOpen, setChangePwdOpen] = useState(false)
   const [changePwdForm, setChangePwdForm] = useState({ current: '', next: '', confirm: '' })
   const [changePwdError, setChangePwdError] = useState('')
@@ -55,7 +58,16 @@ export function VaultDashboard({ userId, userEmail }: Props) {
     setEntries(data ?? [])
   }, [supabase])
 
-  useEffect(() => { fetchEntries() }, [fetchEntries])
+  const fetchShared = useCallback(async () => {
+    const { data } = await supabase
+      .from('vault_shares')
+      .select('entry_id, vault_entries(*)')
+      .eq('shared_with', userId)
+    const entries = (data ?? []).map((r: { vault_entries: VaultEntry }) => r.vault_entries).filter(Boolean)
+    setSharedEntries(entries)
+  }, [supabase, userId])
+
+  useEffect(() => { fetchEntries(); fetchShared() }, [fetchEntries, fetchShared])
 
   function handleNavClick(item: typeof NAV_ITEMS[0]) {
     setNavItem(item.id)
@@ -204,12 +216,23 @@ export function VaultDashboard({ userId, userEmail }: Props) {
         </div>
       )}
 
+      {shareEntry && (
+        <ShareModal
+          entry={shareEntry}
+          currentUserId={userId}
+          onClose={() => setShareEntry(null)}
+          dark={dark}
+        />
+      )}
+
       {detailEntry && (
         <EntryDetail
           entry={detailEntry}
           onClose={() => setDetailEntry(null)}
           onEdit={openEdit}
           onDelete={handleDelete}
+          onShare={() => { setDetailEntry(null); setShareEntry(detailEntry) }}
+          isOwner={detailEntry.user_id === userId}
           dark={dark}
         />
       )}
@@ -412,7 +435,8 @@ export function VaultDashboard({ userId, userEmail }: Props) {
         </div>
 
         {/* Grid */}
-        <div className="flex-1 overflow-y-auto px-6 py-5">
+        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-8">
+          {/* Mis entradas */}
           {filtered.length === 0 ? (
             <div className={`flex flex-col items-center justify-center h-64 ${t.muted}`}>
               <Key className="w-12 h-12 mb-3 opacity-20" />
@@ -430,6 +454,29 @@ export function VaultDashboard({ userId, userEmail }: Props) {
                   dark={dark}
                 />
               ))}
+            </div>
+          )}
+
+          {/* Compartidas conmigo */}
+          {sharedEntries.length > 0 && (
+            <div>
+              <div className={`flex items-center gap-2 mb-3`}>
+                <Share2 className={`w-4 h-4 text-red-500`} />
+                <h3 className={`text-sm font-semibold ${t.text}`}>Compartidas conmigo</h3>
+                <span className={`text-xs px-2 py-0.5 rounded-full ${t.badge}`}>{sharedEntries.length}</span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+                {sharedEntries.map(entry => (
+                  <EntryCard
+                    key={entry.id}
+                    entry={entry}
+                    onEdit={() => {}}
+                    onDelete={() => {}}
+                    onView={() => setDetailEntry(entry)}
+                    dark={dark}
+                  />
+                ))}
+              </div>
             </div>
           )}
         </div>

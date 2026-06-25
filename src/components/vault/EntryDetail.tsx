@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Copy, Eye, EyeOff, Star, Pencil, Trash2, ExternalLink, X } from 'lucide-react'
+import { Copy, Eye, EyeOff, Star, Pencil, Trash2, ExternalLink, X, Share2 } from 'lucide-react'
 import { type VaultEntry } from '@/types'
 
 interface Props {
@@ -9,10 +9,12 @@ interface Props {
   onClose: () => void
   onEdit: (entry: VaultEntry) => void
   onDelete: (id: string) => void
+  onShare?: () => void
+  isOwner?: boolean
   dark?: boolean
 }
 
-export function EntryDetail({ entry, onClose, onEdit, onDelete, dark = true }: Props) {
+export function EntryDetail({ entry, onClose, onEdit, onDelete, onShare, isOwner = true, dark = true }: Props) {
   const [revealed, setRevealed] = useState(false)
   const [copiedPwd, setCopiedPwd] = useState(false)
   const [copiedUser, setCopiedUser] = useState(false)
@@ -126,20 +128,28 @@ export function EntryDetail({ entry, onClose, onEdit, onDelete, dark = true }: P
 
         {/* Footer */}
         <div className={`flex items-center justify-between px-6 py-4 border-t ${divider}`}>
-          <button
-            onClick={handleDelete}
-            className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-red-400 hover:bg-red-500/10 transition-colors"
-          >
-            <Trash2 className="w-4 h-4" />
-            Eliminar
-          </button>
-          <button
-            onClick={() => { onEdit(entry); onClose() }}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-semibold transition-colors"
-          >
-            <Pencil className="w-4 h-4" />
-            Editar
-          </button>
+          <div className="flex items-center gap-2">
+            {isOwner && (
+              <button onClick={handleDelete} className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-red-400 hover:bg-red-500/10 transition-colors">
+                <Trash2 className="w-4 h-4" />
+                Eliminar
+              </button>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            {isOwner && onShare && (
+              <button onClick={onShare} className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-colors ${iconBtn}`}>
+                <Share2 className="w-4 h-4" />
+                Compartir
+              </button>
+            )}
+            {isOwner && (
+              <button onClick={() => { onEdit(entry); onClose() }} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-semibold transition-colors">
+                <Pencil className="w-4 h-4" />
+                Editar
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
