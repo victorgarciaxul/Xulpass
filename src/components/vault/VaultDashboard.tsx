@@ -391,16 +391,6 @@ export function VaultDashboard({ userId, userEmail }: Props) {
             </DialogContent>
           </Dialog>
 
-          <button className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors flex-shrink-0 ${t.iconBtn}`}>
-            <HelpCircle className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => { setChangePwdOpen(true); setChangePwdError(''); setChangePwdOk(false) }}
-            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors flex-shrink-0 ${t.iconBtn}`}
-            title="Cambiar contraseña"
-          >
-            <Settings className="w-4 h-4" />
-          </button>
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-rose-700 flex items-center justify-center text-white font-bold text-sm shadow-lg flex-shrink-0 select-none">
             {initials}
           </div>

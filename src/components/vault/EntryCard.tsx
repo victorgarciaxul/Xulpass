@@ -67,21 +67,23 @@ export function EntryCard({ entry, onEdit, onDelete, onView, dark = true }: Prop
 
   return (
     <div
-      className={`relative group rounded-2xl p-4 cursor-pointer border hover:border-red-500/30 transition-all duration-200 ${cardBg}`}
+      className={`flex flex-col group rounded-2xl p-4 cursor-pointer border hover:border-red-500/30 transition-all duration-200 ${cardBg}`}
       onClick={onView}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {entry.favorite && (
-        <Star className="absolute top-3 right-3 w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
-      )}
-
-      <div className="flex items-center justify-center mb-3 mt-1">
+      {/* Favicon */}
+      <div className="relative flex items-center justify-center mb-3 mt-1">
         <FaviconIcon url={entry.url} title={entry.title} />
+        {entry.favorite && (
+          <Star className="absolute -top-1 -right-1 w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
+        )}
       </div>
 
+      {/* Title */}
       <p className={`text-sm font-semibold text-center truncate mb-0.5 ${titleCls}`}>{entry.title}</p>
 
+      {/* Username */}
       <div className="flex items-center justify-center gap-1">
         <p className={`text-xs truncate max-w-[120px] ${mutedCls}`}>{entry.username}</p>
         <button onClick={handleCopyUsername} className={`opacity-0 group-hover:opacity-100 transition-opacity ${mutedCls}`}>
@@ -89,38 +91,30 @@ export function EntryCard({ entry, onEdit, onDelete, onView, dark = true }: Prop
         </button>
       </div>
 
-      <div className="flex items-center justify-center gap-1.5 mt-2">
+      {/* Password row */}
+      <div className="flex items-center justify-center gap-1.5 mt-1.5">
         <span className={`text-xs font-mono ${mutedCls}`}>
           {revealed ? entry.encrypted_password.slice(0, 12) : '•••••••••'}
         </span>
-        <button
-          onClick={e => { e.stopPropagation(); setRevealed(r => !r) }}
-          className={`opacity-0 group-hover:opacity-100 transition-opacity ${mutedCls}`}
-        >
+        <button onClick={e => { e.stopPropagation(); setRevealed(r => !r) }}
+          className={`opacity-0 group-hover:opacity-100 transition-opacity ${mutedCls}`}>
           {revealed ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
         </button>
       </div>
 
-      {hovered && (
-        <div className={`absolute bottom-0 left-0 right-0 flex items-center justify-center gap-1 p-2 bg-gradient-to-t ${actionsBg} to-transparent rounded-b-2xl`}>
-          <button onClick={handleCopyPassword} className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs transition-colors ${btnCls}`}>
-            <Copy className={`w-3 h-3 ${copiedPwd ? 'text-green-400' : ''}`} />
-            {copiedPwd ? '¡Copiado!' : 'Copiar'}
-          </button>
-          <button onClick={e => { e.stopPropagation(); onEdit(entry) }} className={`p-1.5 rounded-lg transition-colors ${iconBtnCls}`}>
-            <Pencil className="w-3 h-3" />
-          </button>
-          <button onClick={e => { e.stopPropagation(); onDelete(entry.id) }} className={`p-1.5 rounded-lg transition-colors ${iconBtnCls} hover:!text-red-500 hover:!bg-red-50`}>
-            <Trash2 className="w-3 h-3" />
-          </button>
-        </div>
-      )}
-
-      {!hovered && (
-        <div className="absolute bottom-3 right-3">
-          <Lock className={`w-3 h-3 ${dark ? 'text-slate-700' : 'text-gray-300'}`} />
-        </div>
-      )}
+      {/* Actions — always in flow, visible on hover */}
+      <div className={`mt-3 flex items-center justify-center gap-1 transition-opacity duration-150 ${hovered ? 'opacity-100' : 'opacity-0'}`}>
+        <button onClick={handleCopyPassword} className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs transition-colors ${btnCls}`}>
+          <Copy className={`w-3 h-3 ${copiedPwd ? 'text-green-400' : ''}`} />
+          {copiedPwd ? '¡Copiado!' : 'Copiar'}
+        </button>
+        <button onClick={e => { e.stopPropagation(); onEdit(entry) }} className={`p-1.5 rounded-lg transition-colors ${iconBtnCls}`}>
+          <Pencil className="w-3 h-3" />
+        </button>
+        <button onClick={e => { e.stopPropagation(); onDelete(entry.id) }} className={`p-1.5 rounded-lg transition-colors ${iconBtnCls} hover:!text-red-500`}>
+          <Trash2 className="w-3 h-3" />
+        </button>
+      </div>
     </div>
   )
 }
