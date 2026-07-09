@@ -32,7 +32,7 @@ export function ShareModal({ entry, currentUserId, onClose, dark = true }: Props
   useEffect(() => {
     async function load() {
       const [{ data: usersData }, { data: sharesData }] = await Promise.all([
-        supabase.from('public_users').select('id, email'),
+        supabase.rpc('get_users'),
         supabase.from('vault_shares').select('shared_with').eq('entry_id', entry.id),
       ])
       setUsers((usersData ?? []).filter((u: PublicUser) => u.id !== currentUserId))

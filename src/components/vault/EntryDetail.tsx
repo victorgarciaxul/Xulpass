@@ -53,12 +53,17 @@ export function EntryDetail({ entry, onClose, onEdit, onDelete, onShare, isOwner
       >
         {/* Header */}
         <div className={`flex items-center justify-between px-6 py-4 border-b ${divider}`}>
-          <div className="flex items-center gap-3">
-            {entry.favorite && <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />}
-            <h2 className={`text-lg font-semibold ${titleCls}`}>{entry.title}</h2>
-            <span className={`text-xs px-2 py-0.5 rounded-full border ${dark ? 'bg-white/5 border-white/10 text-slate-400' : 'bg-gray-100 border-gray-200 text-gray-500'}`}>
-              {entry.category}
-            </span>
+          <div>
+            <div className="flex items-center gap-3">
+              {entry.favorite && <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />}
+              <h2 className={`text-lg font-semibold ${titleCls}`}>{entry.title}</h2>
+              <span className={`text-xs px-2 py-0.5 rounded-full border ${dark ? 'bg-white/5 border-white/10 text-slate-400' : 'bg-gray-100 border-gray-200 text-gray-500'}`}>
+                {entry.category}
+              </span>
+            </div>
+            {entry.shared_by_email && (
+              <p className={`text-xs mt-1 ${mutedCls}`}>Compartida por {entry.shared_by_email}</p>
+            )}
           </div>
           <button onClick={onClose} className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${iconBtn}`}>
             <X className="w-4 h-4" />

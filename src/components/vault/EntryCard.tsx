@@ -83,6 +83,13 @@ export function EntryCard({ entry, onEdit, onDelete, onView, dark = true }: Prop
       {/* Title */}
       <p className={`text-sm font-semibold text-center truncate mb-0.5 ${titleCls}`}>{entry.title}</p>
 
+      {/* Shared by */}
+      {entry.shared_by_email && (
+        <p className={`text-[10px] text-center truncate mb-1 ${mutedCls}`}>
+          Compartida por {entry.shared_by_email}
+        </p>
+      )}
+
       {/* Username */}
       <div className="flex items-center justify-center gap-1">
         <p className={`text-xs truncate max-w-[120px] ${mutedCls}`}>{entry.username}</p>
