@@ -1,3 +1,4 @@
+"use strict";
 (() => {
   var __getOwnPropNames = Object.getOwnPropertyNames;
   var __esm = (fn, res, err) => function __init() {
@@ -21337,6 +21338,7 @@ ${suffix}`;
   var SUPABASE_URL, SUPABASE_ANON_KEY, supabase;
   var init_supabase = __esm({
     "src/lib/supabase.ts"() {
+      "use strict";
       init_dist4();
       SUPABASE_URL = "https://kyaaqlumpsuwukfxltht.supabase.co";
       SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5YWFxbHVtcHN1d3VrZnhsdGh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxNTgzOTEsImV4cCI6MjA5NzczNDM5MX0.vjXH9N7oEXiJq1s_L1xQtGKhBxr6qrrjhiEvVwx7OcM";
@@ -21359,7 +21361,7 @@ ${suffix}`;
   var require_index = __commonJS({
     "src/popup/index.ts"() {
       init_supabase();
-      var XULPASS_WEB_URL = "http://localhost:3000";
+      var XULPASS_WEB_URL = "https://xulpass.xul.es";
       var currentUser = null;
       var allEntries = [];
       var currentTab = "all";
@@ -21413,7 +21415,7 @@ ${suffix}`;
         chrome.tabs.create({ url: XULPASS_WEB_URL });
       });
       async function loadEntries() {
-        const { data } = await supabase.from("vault_entries").select("*").order("favorite", { ascending: false }).order("title");
+        const { data } = await supabase.from("vault_entries_dec").select("*").order("favorite", { ascending: false }).order("title");
         allEntries = data ?? [];
         try {
           const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -21485,7 +21487,7 @@ ${suffix}`;
         const btn = $("btn-save");
         btn.textContent = "Guardando...";
         btn.disabled = true;
-        const { error } = await supabase.from("vault_entries").insert({
+        const { error } = await supabase.from("vault_entries_dec").insert({
           user_id: currentUser.id,
           title,
           username,

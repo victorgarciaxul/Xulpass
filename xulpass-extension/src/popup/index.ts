@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase'
 
-const XULPASS_WEB_URL = 'http://localhost:3000'
+const XULPASS_WEB_URL = 'https://xulpass.xul.es'
 
 interface VaultEntry {
   id: string
@@ -84,7 +84,7 @@ $('btn-open-web').addEventListener('click', () => {
 // ── Load entries ──
 async function loadEntries() {
   const { data } = await supabase
-    .from('vault_entries')
+    .from('vault_entries_dec')
     .select('*')
     .order('favorite', { ascending: false })
     .order('title')
@@ -175,7 +175,7 @@ $('btn-save').addEventListener('click', async () => {
   btn.textContent = 'Guardando...'
   btn.disabled = true
 
-  const { error } = await supabase.from('vault_entries').insert({
+  const { error } = await supabase.from('vault_entries_dec').insert({
     user_id: currentUser!.id,
     title,
     username,

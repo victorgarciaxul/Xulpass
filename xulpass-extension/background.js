@@ -21336,6 +21336,7 @@ var init_dist4 = __esm({
 var SUPABASE_URL, SUPABASE_ANON_KEY, supabase;
 var init_supabase = __esm({
   "src/lib/supabase.ts"() {
+    "use strict";
     init_dist4();
     SUPABASE_URL = "https://kyaaqlumpsuwukfxltht.supabase.co";
     SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5YWFxbHVtcHN1d3VrZnhsdGh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxNTgzOTEsImV4cCI6MjA5NzczNDM5MX0.vjXH9N7oEXiJq1s_L1xQtGKhBxr6qrrjhiEvVwx7OcM";
