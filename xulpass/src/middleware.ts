@@ -36,9 +36,21 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
 
   const isAuthPage = request.nextUrl.pathname.startsWith('/login')
+  const isSsoRoute = request.nextUrl.pathname.startsWith('/api/sso')
 
-  if (!user && !isAuthPage) {
-    return NextResponse.redirect(new URL('/login', request.url))
+  // SSO desde AppCenter: si llega ?sso_token= y no hay sesión, canjearlo en /api/sso
+  const ssoToken = request.nextUrl.searchParams.get('sso_token')
+  if (!user && ssoToken && !isSsoRoute) {
+    const ssoUrl = new URL('/api/sso', request.url)
+    ssoUrl.searchParams.set('sso_token', ssoToken)
+    return NextResponse.redirect(ssoUrl)
+  }
+
+  if (!user && !isAuthPage && !isSsoRoute) {
+    // Sin sesión: todo pasa por AppCenter (mismo patrón que MyTrack).
+    // /login queda accesible solo como acceso de emergencia directo.
+    const returnTo = encodeURIComponent('https://xulpass.xul.es')
+    return NextResponse.redirect(`https://appcenter.xul.es?return_to=${returnTo}`)
   }
 
   if (user && isAuthPage) {
